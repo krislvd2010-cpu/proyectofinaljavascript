@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Cajero ATM</title>
+</head>
+<body>
+
+    <!-- -------------------- PANTALLA LOGIN (DNI) -------------------- -->
+    <div id="pantalla-login" class="pantalla visible">
+        <div class="contenedor">
+            <h1>Ingrese DNI</h1>
+            <div class="login-box">
+                <input id="dni" type="password" maxlength="8" placeholder="DNI"
+                       oninput="soloNumeros(this)">
+            </div>
+            <button class="btn-naranja" onclick="validarLogin()">Continuar</button>
+        </div>
+    </div>
+
+    <!-- -------------------- PANTALLA PIN -------------------- -->
+    <div id="pantalla-pin" class="pantalla oculto">
+        <div class="contenedor">
+            <button class="btn-salir" onclick="mostrarPantalla('pantalla-login')">Salir</button>
+            <h1>Ingrese clave secreta</h1>
+            <input id="clave" type="password" maxlength="4" placeholder="****"
+                   oninput="soloNumeros(this)">
+            <br><br>
+            <button class="btn-naranja" onclick="validarClave()">Ingresar</button>
+        </div>
+    </div>
+
+    <!-- -------------------- PANTALLA BIENVENIDA -------------------- -->
+    <div id="pantalla-bienvenida" class="pantalla oculto">
+        <div class="contenedor">
+            <button class="btn-salir" onclick="mostrarPantalla('pantalla-login')">Salir</button>
+            <h1 id="bienvenida"></h1>
+            <button class="btn-naranja" onclick="mostrarPantalla('pantalla-menu')">Ir al menú</button>
+        </div>
+    </div>
+
+    <!-- -------------------- MENÚ PRINCIPAL -------------------- -->
+    <div id="pantalla-menu" class="pantalla oculto">
+        <div class="contenedor">
+            <button class="btn-salir" onclick="mostrarPantalla('pantalla-login')">Salir</button>
+            <h1>Seleccione una operación</h1>
+
+            <div class="grid-menu">
+                <div class="card blanca" onclick="mostrarPantalla('pantalla-consultar')">
+                    Consultar saldo
+                </div>
+
+                <div class="card naranja" onclick="mostrarPantalla('pantalla-ingresar')">
+                    Ingresar monto
+                </div>
+
+                <div class="card blanca" onclick="mostrarPantalla('pantalla-retirar')">
+                    Retirar monto
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- -------------------- CONSULTAR SALDO -------------------- -->
+    <div id="pantalla-consultar" class="pantalla oculto">
+        <div class="contenedor">
+            <button class="btn-salir" onclick="mostrarPantalla('pantalla-menu')">Volver</button>
+            <h1>Tu saldo actual es:</h1>
+            <h2 id="txt-saldo"></h2>
+        </div>
+    </div>
+
+    <!-- -------------------- INGRESAR MONTO -------------------- -->
+    <div id="pantalla-ingresar" class="pantalla oculto">
+        <div class="contenedor">
+            <button class="btn-salir" onclick="mostrarPantalla('pantalla-menu')">Volver</button>
+            <h1>Ingresar monto</h1>
+            <input id="monto-ingresar" type="text" placeholder="Monto"
+                   oninput="soloNumeros(this)">
+            <br><br>
+            <button class="btn-naranja" onclick="ingresarMontoPantalla()">Confirmar</button>
+        </div>
+    </div>
+
+    <!-- -------------------- RETIRAR MONTO -------------------- -->
+    <div id="pantalla-retirar" class="pantalla oculto">
+        <div class="contenedor">
+            <button class="btn-salir" onclick="mostrarPantalla('pantalla-menu')">Volver</button>
+            <h1>Retirar monto</h1>
+            <input id="monto-retirar" type="text" placeholder="Monto"
+                   oninput="soloNumeros(this)">
+            <br><br>
+            <button class="btn-naranja" onclick="retirarMontoPantalla()">Confirmar</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    
+</body>
+</html>
