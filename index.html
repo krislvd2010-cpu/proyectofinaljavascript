@@ -1,101 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <title>Cajero ATM - Kiosk</title>
     <link rel="stylesheet" href="style.css">
-    <title>Cajero ATM</title>
 </head>
 <body>
 
-    <!-- -------------------- PANTALLA LOGIN (DNI) -------------------- -->
-    <div id="pantalla-login" class="pantalla visible">
-        <div class="contenedor">
-            <h1>Ingrese DNI</h1>
-            <div class="login-box">
-                <input id="dni" type="password" maxlength="8" placeholder="DNI"
-                       oninput="soloNumeros(this)">
+    <!-- Audio (usa tu archivo beep.mp3 en la misma carpeta) -->
+    <audio id="audio-beep" src="beep.mp3" preload="auto"></audio>
+
+    <div class="wrap">
+
+        <!-- LOGO SUPERIOR IZQUIERDA (dentro de wrap) -->
+        <img src="BCP.png" alt="logo" class="logo-superior">
+
+        <!-- PANTALLA: BIENVENIDA -->
+        <section id="pantalla-bienvenida" class="pantalla visible">
+            <h1 style="font-size:48px; margin-bottom:25px;">Bienvenido al BCP</h1>
+            <button id="btn-ingresar" class="btn cuenta-btn">Ingresar</button>
+        </section>
+
+        <!-- PANTALLA: LOGIN DNI -->
+        <section id="pantalla-login-dni" class="pantalla oculto">
+            <h1>Ingresa tu número de DNI</h1>
+            <!-- tipo text para permitir soloNumeros oninput -->
+            <input id="login-dni" type="text" placeholder="Ingrese su DNI" oninput="soloNumeros(this)" maxlength="8">
+            <div class="acciones">
+                <button class="btn-limpiar" onclick="clearField('login-dni')">Limpiar</button>
+                <button class="btn" id="btn-login-dni">Siguiente</button>
             </div>
-            <button class="btn-naranja" onclick="validarLogin()">Continuar</button>
-        </div>
-    </div>
+            <div id="login-dni-msg" class="mensaje"></div>
+        </section>
 
-    <!-- -------------------- PANTALLA PIN -------------------- -->
-    <div id="pantalla-pin" class="pantalla oculto">
-        <div class="contenedor">
-            <button class="btn-salir" onclick="mostrarPantalla('pantalla-login')">Salir</button>
-            <h1>Ingrese clave secreta</h1>
-            <input id="clave" type="password" maxlength="4" placeholder="****"
-                   oninput="soloNumeros(this)">
-            <br><br>
-            <button class="btn-naranja" onclick="validarClave()">Ingresar</button>
-        </div>
-    </div>
+        <!-- PANTALLA: LOGIN CLAVE -->
+        <section id="pantalla-login-clave" class="pantalla oculto">
+            <h1>Contraseña</h1>
+            <input id="login-clave" type="password" placeholder="Ingrese su contraseña" maxlength="20">
+            <div class="acciones">
+                <button class="btn-limpiar" onclick="volverA('pantalla-login-dni')">Atrás</button>
+                <button class="btn" id="btn-login-clave">Ingresar</button>
+            </div>
+            <div id="login-clave-msg" class="mensaje"></div>
+        </section>
 
-    <!-- -------------------- PANTALLA BIENVENIDA -------------------- -->
-    <div id="pantalla-bienvenida" class="pantalla oculto">
-        <div class="contenedor">
-            <button class="btn-salir" onclick="mostrarPantalla('pantalla-login')">Salir</button>
-            <h1 id="bienvenida"></h1>
-            <button class="btn-naranja" onclick="mostrarPantalla('pantalla-menu')">Ir al menú</button>
-        </div>
-    </div>
+        <!-- PANTALLA: MENÚ (Opción 2: dos columnas) -->
+        <section id="pantalla-menu" class="pantalla oculto">
+            <div class="menu-header">
+                <div id="usuario-activo" class="info-usuario"></div>
+                <button class="btn-salir" onclick="cerrarSesion()">Cerrar sesión</button>
+            </div>
 
-    <!-- -------------------- MENÚ PRINCIPAL -------------------- -->
-    <div id="pantalla-menu" class="pantalla oculto">
-        <div class="contenedor">
-            <button class="btn-salir" onclick="mostrarPantalla('pantalla-login')">Salir</button>
-            <h1>Seleccione una operación</h1>
+            <h1>Seleccione operación</h1>
 
-            <div class="grid-menu">
-                <div class="card blanca" onclick="mostrarPantalla('pantalla-consultar')">
-                    Consultar saldo
+            <div class="grid opcion2">
+                <div class="card" onclick="abrirOperacionProtegida('consultar')">Consultar saldo</div>
+                <div class="card" onclick="abrirOperacionProtegida('movimientos')">Movimientos</div>
+                <div class="card highlight" onclick="abrirOperacionProtegida('ingresar')">Ingresar monto</div>
+                <div class="card" onclick="abrirOperacionProtegida('retirar')">Retirar monto</div>
+            </div>
+
+            <div id="menu-msg" class="mensaje"></div>
+        </section>
+
+        <!-- PANTALLAS de operación (se mantienen tal cual) -->
+        <section id="pantalla-consultar" class="pantalla oculto">
+            <h1>Consultar saldo</h1>
+            <div id="consultar-panel-pass" class="subpanel">
+                <input id="consultar-pass" type="password" placeholder="Ingrese su contraseña">
+                <div class="acciones">
+                    <button class="btn-limpiar" onclick="clearField('consultar-pass')">Limpiar</button>
+                    <button class="btn" onclick="validarOperacion('consultar')">Validar</button>
+                </div>
+                <div id="consultar-msg" class="mensaje"></div>
+            </div>
+            <div id="consultar-result" class="subpanel oculto">
+                <h2>Saldo actual: <span id="consultar-saldo">S/ 0.00</span></h2>
+                <div class="acciones">
+                    <button class="btn" onclick="mostrarPantalla('pantalla-menu')">Volver</button>
+                </div>
+                <div id="consultar-info" class="mensaje"></div>
+            </div>
+        </section>
+
+        <section id="pantalla-movimientos" class="pantalla oculto">
+            <h1>Movimientos</h1>
+            <div id="movs-panel-pass" class="subpanel">
+                <input id="movs-pass" type="password" placeholder="Ingrese su contraseña">
+                <div class="acciones">
+                    <button class="btn-limpiar" onclick="clearField('movs-pass')">Limpiar</button>
+                    <button class="btn" onclick="validarOperacion('movimientos')">Validar</button>
+                </div>
+                <div id="movs-msg" class="mensaje"></div>
+            </div>
+            <div id="movs-result" class="subpanel oculto">
+                <ul id="movimientos-list" class="lista"></ul>
+                <div class="acciones">
+                    <button class="btn" onclick="mostrarPantalla('pantalla-menu')">Volver</button>
+                </div>
+                <div id="movs-info" class="mensaje"></div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: INGRESAR -->
+        <section id="pantalla-ingresar" class="pantalla oculto">
+            <h1>Ingresa la cantidad a ingresar</h1>
+            <div id="ing-panel-pass" class="subpanel">
+                
+                <input id="ing-pass" type="password" placeholder="Ingrese su contraseña">
+                <div class="acciones">
+                    <button class="btn-limpiar" onclick="clearField('ing-pass')">Limpiar</button>
+                    <button class="btn" onclick="validarOperacion('ingresar')">Validar</button>
+                </div>
+                <div id="ing-pass-msg" class="mensaje"></div>
+            </div>
+
+            <div id="ing-panel-op" class="subpanel oculto">
+                <div class="panel-saldo">
+                    <div>Saldo antes: <strong id="ing-saldo-antes">S/ 0.00</strong></div>
+                    <div>Saldo estimado: <strong id="ing-saldo-desp">S/ 0.00</strong></div>
+                </div>
+                <div class="billetes-rapidos">
+                    <button class="btn-billete" onclick="setMontoRapido(20, 'ing-monto', 'ing-res')">20</button>
+                    <button class="btn-billete" onclick="setMontoRapido(50, 'ing-monto', 'ing-res')">50</button>
+                    <button class="btn-billete" onclick="setMontoRapido(100, 'ing-monto', 'ing-res')">100</button>
+                    <button class="btn-billete" onclick="setMontoRapido(200, 'ing-monto', 'ing-res')">200</button>
+                </div>
+                <input id="ing-monto" type="text" placeholder="Monto a depositar" oninput="soloNumeros(this)">
+                <div class="acciones">
+                    <button class="btn-limpiar" onclick="clearField('ing-monto')">Limpiar</button>
+                    <button class="btn" onclick="confirmarIngreso()">Confirmar</button>
+                    <button class="btn" onclick="cancelarOperacion()">Cancelar</button>
+                </div>
+                <div id="ing-res" class="mensaje"></div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: RETIRAR -->
+        <section id="pantalla-retirar" class="pantalla oculto">
+            <h1>Retiro de fondos</h1>
+            <div id="ret-panel-pass" class="subpanel">
+                <input id="ret-pass" type="password" placeholder="Ingrese su contraseña">
+                <div class="acciones">
+                    <button class="btn-limpiar" onclick="clearField('ret-pass')">Limpiar</button>
+                    <button class="btn" onclick="validarOperacion('retirar')">Validar</button>
+                </div>
+                <div id="ret-pass-msg" class="mensaje"></div>
+            </div>
+            <div id="ret-panel-op" class="subpanel oculto">
+                <div class="panel-saldo">
+                    <div>Saldo actual: <strong id="ret-saldo-actual">S/ 0.00</strong></div>
                 </div>
 
-                <div class="card naranja" onclick="mostrarPantalla('pantalla-ingresar')">
-                    Ingresar monto
+                <div class="billetes-rapidos">
+                    <button class="btn-billete" onclick="setMontoRapido(20, 'ret-monto', 'ret-res')">20</button>
+                    <button class="btn-billete" onclick="setMontoRapido(50, 'ret-monto', 'ret-res')">50</button>
+                    <button class="btn-billete" onclick="setMontoRapido(100, 'ret-monto', 'ret-res')">100</button>
+                    <button class="btn-billete" onclick="setMontoRapido(200, 'ret-monto', 'ret-res')">200</button>
                 </div>
 
-                <div class="card blanca" onclick="mostrarPantalla('pantalla-retirar')">
-                    Retirar monto
+                <input id="ret-monto" type="text" placeholder="Monto a retirar" oninput="soloNumeros(this)">
+                <div class="acciones">
+                    <button class="btn-limpiar" onclick="clearField('ret-monto')">Limpiar</button>
+                    <button class="btn" onclick="confirmarRetiro()">Confirmar</button>
+                    <button class="btn" onclick="cancelarOperacion()">Cancelar</button>
+                </div>
+                <div id="ret-res" class="mensaje"></div>
+                <div id="ret-panel-result" class="panel-saldo oculto">
+                    <div>Monto retirado: <strong id="ret-monto-show">S/ 0.00</strong></div>
+                    <div>Saldo restante: <strong id="ret-saldo-show">S/ 0.00</strong></div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- -------------------- CONSULTAR SALDO -------------------- -->
-    <div id="pantalla-consultar" class="pantalla oculto">
-        <div class="contenedor">
-            <button class="btn-salir" onclick="mostrarPantalla('pantalla-menu')">Volver</button>
-            <h1>Tu saldo actual es:</h1>
-            <h2 id="txt-saldo"></h2>
-        </div>
-    </div>
+        <!-- LOGO INFERIOR CENTRADO -->
+        <img src="cuy.png" alt="logo" class="logo-inferior">
 
-    <!-- -------------------- INGRESAR MONTO -------------------- -->
-    <div id="pantalla-ingresar" class="pantalla oculto">
-        <div class="contenedor">
-            <button class="btn-salir" onclick="mostrarPantalla('pantalla-menu')">Volver</button>
-            <h1>Ingresar monto</h1>
-            <input id="monto-ingresar" type="text" placeholder="Monto"
-                   oninput="soloNumeros(this)">
-            <br><br>
-            <button class="btn-naranja" onclick="ingresarMontoPantalla()">Confirmar</button>
-        </div>
-    </div>
-
-    <!-- -------------------- RETIRAR MONTO -------------------- -->
-    <div id="pantalla-retirar" class="pantalla oculto">
-        <div class="contenedor">
-            <button class="btn-salir" onclick="mostrarPantalla('pantalla-menu')">Volver</button>
-            <h1>Retirar monto</h1>
-            <input id="monto-retirar" type="text" placeholder="Monto"
-                   oninput="soloNumeros(this)">
-            <br><br>
-            <button class="btn-naranja" onclick="retirarMontoPantalla()">Confirmar</button>
-        </div>
     </div>
 
     <script src="app.js"></script>
-    
 </body>
 </html>
+
+

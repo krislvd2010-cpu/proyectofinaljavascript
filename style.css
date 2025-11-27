@@ -1,92 +1,126 @@
+/* Ancho fijo 1200px - no responsivo (para kioscos) */
+:root{
+    --bg: #003b7a;
+    --accent: #ff7b00;
+    --white: #ffffff;
+    --muted: rgba(255,255,255,0.85);
+    --error: #ffff;
+    --success: #fff;
+}
+
+* { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
+
 body {
-    margin: 0;
     background: #111;
-    font-family: Arial, sans-serif;
-}
-
-/* Pantallas */
-.pantalla {
-    width: 100%;
-    height: 100vh;
-    background: #0047A5;
-    color: white;
-    display: none;
+    color: var(--white);
+    display: flex;
     justify-content: center;
-    align-items: center;
+    padding: 30px 0;
+    user-select: none;
 }
 
-.visible { display: flex; }
+/* Caja central de ancho fijo 1200px */
+.wrap {
+    width: 1200px;
+    height: 640px;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+    position: relative;
+
+    background: url("fondo.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* LOGO: dentro de wrap */
+.logo-superior {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 200px;
+    z-index: 100;
+}
+
+.logo-inferior {
+    position: absolute;
+    bottom: 10px;
+    left: 90%;
+    transform: translateX(-50%);
+    width: 250px;
+    z-index: 100;
+}
+
+/* Pantallas - una visible a la vez */
+.pantalla { display: none; text-align: center; padding: 100px 20px; min-height: 420px; }
+.visible { display: block; }
 .oculto { display: none; }
 
-.contenedor {
-    width: 90%;
-    max-width: 1100px;
+/* Header menu */
+.menu-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.info-usuario { font-size:16px; color: var(--muted); }
+
+/* Grid menú opción 2 */
+.grid { display: grid; gap: 18px; margin-top: 18px; }
+.opcion2 { grid-template-columns: 1fr 1fr; }
+
+/* Cards */
+.card { background: rgba(255,255,255,0.95); color: #003b7a; border-radius: 10px; padding: 24px; font-size: 20px; cursor:pointer; box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
+.card.highlight { background: var(--accent); color: var(--white); }
+
+/* Buttons */
+.btn { background: var(--accent); color: var(--white); border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; margin: 6px; }
+.btn-salir { background: transparent; border: 2px solid rgba(255,255,255,0.15); color: var(--white); padding: 8px 12px; border-radius:8px; cursor:pointer; }
+.btn-limpiar { background: rgba(255,255,255,0.06); color: var(--white); border: 1px solid rgba(255,255,255,0.06); padding: 8px 12px; border-radius:8px; cursor:pointer; }
+
+/* Inputs */
+input[type="text"], input[type="password"] {
+    padding: 10px 12px;
+    width: 360px;
+    border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.02);
+    color: var(--white);
     text-align: center;
-    position: relative;
+    font-size: 16px;
+    margin-top: 8px;
 }
 
-h1, h2 { margin-top: 0; }
+.billetes-rapidos {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 18px;
+}
 
-/* Botones */
-.btn-naranja {
-    background: #ff7b00;
-    color: white;
+.btn-billete {
+    background: var(--accent);
+    color: var(--white);
     border: none;
-    padding: 12px 28px;
-    font-size: 18px;
-    border-radius: 25px;
-    cursor: pointer;
-}
-
-.btn-salir {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: transparent;
-    border: 2px solid white;
-    padding: 8px 14px;
-    border-radius: 10px;
-    color: white;
-    cursor: pointer;
-}
-
-/* Login */
-.login-box input,
-#clave,
-#monto-ingresar,
-#monto-retirar {
-    padding: 10px;
-    width: 250px;
-    border-radius: 10px;
-    border: 2px solid white;
-    background: transparent;
-    color: white;
-    text-align: center;
+    padding: 14px 26px;
     font-size: 20px;
-    margin-bottom: 20px;
+    border-radius: 12px;
+    cursor: pointer;
 }
 
-/* Menú */
-.grid-menu {
+/* Movimientos en dos columnas */
+#movimientos-list .mov-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    margin-top: 30px;
+    padding: 6px 0;
+    border-bottom: 1px solid #ddd;
 }
 
-.card {
-    padding: 40px 20px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 22px;
+#movimientos-list .mov-col {
+    padding: 4px 8px;
+    font-size: 0.9rem;
 }
 
-.card.blanca {
-    background: white;
-    color: #0047A5;
-}
+/* Acciones */
+.acciones { margin-top: 12px; display:flex; justify-content:center; gap:10px; align-items:center; }
 
-.card.naranja {
-    background: #ff7b00;
-    color: white;
-}
+/* Mensajes */
+.mensaje { margin-top: 12px; padding: 10px 12px; border-radius: 8px; min-height: 36px; font-size: 14px; }
+.mensaje.error { background: rgba(89, 77, 255, 0); color: var(--error); }
+.mensaje.success { background: rgba(29, 185, 84, 0); color: var(--success); }
